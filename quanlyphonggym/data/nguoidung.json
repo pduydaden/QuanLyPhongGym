@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "hoten": "Nguyen Van A",
+    "gioitinh": "Nam",
+    "namsinh": 2001,
+    "sdt": "0468322213",
+    "email": "u1@gmail.com",
+    "pswd": "123",
+    "vaitro": "ND"
+  },
+  {
+    "id": 2,
+    "hoten": "Nguyen Van B",
+    "gioitinh": "Nam",
+    "namsinh": 2002,
+    "sdt": "318948333412",
+    "email": "u2@gmail.com",
+    "pswd": "123",
+    "vaitro": "ND"
+  },
+  {
+    "id": 3,
+    "hoten": "Nguyen Van B",
+    "gioitinh": "Nu",
+    "namsinh": 2003,
+    "sdt": "03846584888",
+    "email": "u3@gmail.com",
+    "pswd": "123",
+    "vaitro": "ND"
+  }
+]

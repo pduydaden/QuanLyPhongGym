@@ -1,4 +1,13 @@
 [
-  {"id":  1,
-  "name":  "goi1"}
+  {"magoitap": 1,
+  "tengoitap":  "1 thang",
+  "giagoitap":  90000},
+
+  {"magoitap": 2,
+  "tengoitap":  "6 thang",
+  "giagoitap":  190000},
+
+  {"magoitap": 3,
+  "tengoitap":  "12 thang",
+  "giagoitap":  1190000}
 ]
