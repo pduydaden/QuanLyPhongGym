@@ -1,4 +1,5 @@
 import json
+from models import NguoiDung, GoiTap
 
 
 def load_goitap():

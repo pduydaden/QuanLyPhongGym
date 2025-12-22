@@ -7,7 +7,8 @@
     "sdt": "0468322213",
     "email": "u1@gmail.com",
     "pswd": "123",
-    "vaitro": "ND"
+    "vaitro": "ND",
+    "goitap_id": 1
   },
   {
     "id": 2,
@@ -17,7 +18,8 @@
     "sdt": "318948333412",
     "email": "u2@gmail.com",
     "pswd": "123",
-    "vaitro": "ND"
+    "vaitro": "ND",
+    "goitap_id": 2
   },
   {
     "id": 3,
@@ -27,6 +29,7 @@
     "sdt": "03846584888",
     "email": "u3@gmail.com",
     "pswd": "123",
-    "vaitro": "ND"
+    "vaitro": "ND",
+    "goitap_id": 3
   }
 ]
