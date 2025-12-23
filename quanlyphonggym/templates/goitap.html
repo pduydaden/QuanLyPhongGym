@@ -1,5 +1,84 @@
-{%extends 'layout/base.html'%}
+{% extends 'layout/base.html' %}
 
-{%block conten%}
-goitap
-{%endblock%}
+{% block conten %}
+<div class="goitap-wrapper"
+     style="background-image: url(''); background-size: cover; background-position: center; padding: 4rem 0;">
+
+    <div class="goitap-container p-5 mx-auto">
+        {% if msg %}
+        <div class="alert alert-{{ alert_type }} text-center" role="alert">
+            {{ msg }}
+        </div>
+        {% endif %}
+
+        <h2 class="text-center mb-5 fw-bold">Các Gói Tập</h2>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for g in goitaps %}
+            <div class="col">
+                <div class="card h-100 text-center shadow-sm goitap-card">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <h5 class="card-title fw-bold">{{ g.name }}</h5>
+                        <p class="card-text display-6 text-primary">{{ "{:,.0f}".format(g.giagoitap) }} VND</p>
+                        <a href="#"
+                           class="btn btn-outline-primary mt-auto"
+                           onclick="chonGoiTap({{ g.id }}, '{{ g.name }}')">
+                            Chọn gói tập
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function chonGoiTap(goitapId, goitapName) {
+    const isLoggedIn = {{ 'true' if current_user.is_authenticated else 'false' }};
+
+    if (!isLoggedIn) {
+        const loginConfirm = confirm('Bạn cần đăng nhập để chọn gói tập này. Bạn có muốn đăng nhập ngay không?');
+        if (loginConfirm) {
+            window.location.href = "{{ url_for('login_my_user') }}";
+        }
+        return;
+    }
+
+    const confirmChange = confirm(`Bạn có chắc muốn chọn gói tập "${goitapName}"? Gói tập hiện tại sẽ bị thay thế.`);
+    if (confirmChange) {
+        window.location.href = `{{ url_for('goitap_dashboard') }}?chon=${goitapId}`;
+    }
+}
+</script>
+
+<style>
+.goitap-container {
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    max-width: 1200px;
+}
+
+.goitap-card {
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.goitap-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.25);
+}
+.card-title {
+    font-size: 1.5rem;
+}
+.card-text.display-6 {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+@media (max-width: 768px) {
+    .card-text.display-6 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+{% endblock %}

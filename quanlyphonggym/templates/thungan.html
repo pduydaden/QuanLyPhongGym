@@ -15,6 +15,7 @@
                         <th>Tổng tiền</th>
                         <th>Trạng thái</th>
                         <th>Ngày thanh toán</th>
+                        <th>Hành động</th> <!-- Thêm cột Hành động -->
                     </tr>
                 </thead>
                 <tbody>
@@ -30,14 +31,22 @@
                             </div>
                         </td>
                         <td>{{ hd.ngaythanhtoan or '-' }}</td>
+                        <td>
+                            <!-- Nút xóa -->
+                            <button type="submit" name="xoa_{{ hd.id }}" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Bạn có chắc muốn xóa hóa đơn này?');">
+                                Xóa
+                            </button>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
 
-        <div class="text-center">
+        <div class="text-center d-flex justify-content-center gap-3 mt-3">
             <button type="submit" class="btn btn-success btn-lg shadow">Cập nhật tất cả</button>
+            <a href="{{ url_for('tao_hoadon') }}" class="btn btn-primary btn-lg shadow">Tạo hóa đơn mới</a>
         </div>
     </form>
 </div>

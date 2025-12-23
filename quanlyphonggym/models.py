@@ -36,6 +36,7 @@ class User(Base, UserMixin):
     hlv_id = Column(Integer, ForeignKey('user.id'), nullable=True)
     role = Column(Enum(UserRole), default=UserRole.USER)
     hoadon = relationship('HoaDon', lazy=True)
+    goitap = relationship('GoiTap', lazy=True)
     hlv = relationship('User', remote_side='User.id', lazy=True)
 
 class BaiTap(Base):
@@ -64,6 +65,7 @@ class HoaDon(Base):
     trangthai = Column(Boolean, default=False)
     ngaythanhtoan  = Column(DateTime,default= None)
     user_id = Column(Integer, ForeignKey(User.id),nullable=False)
+    user = relationship('User', backref='hoadons', lazy=True)
 
 if __name__ == "__main__":
     with app.app_context():
@@ -86,8 +88,8 @@ if __name__ == "__main__":
 
         db.session.add_all([u1, u2, u3, u4, u5, u6, u7, u8])
 
-        hd1 = HoaDon(name="Hóa đơn của u1",tongtien=90000, trangthai=False,ngaythanhtoan=None,user_id=1)
-        hd2 = HoaDon(name="Hóa đơn của u1",tongtien=90000, trangthai=True,ngaythanhtoan=datetime.now(),user_id=2)
+        hd1 = HoaDon(name="Hóa đơn của Nguyen Van A",tongtien=90000, trangthai=False,ngaythanhtoan=None,user_id=1)
+        hd2 = HoaDon(name="Hóa đơn của Nguyen Van A",tongtien=90000, trangthai=True,ngaythanhtoan=datetime.now(),user_id=1)
 
         db.session.add_all([hd1, hd2])
 

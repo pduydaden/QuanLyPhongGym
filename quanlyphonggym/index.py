@@ -99,6 +99,26 @@ def hlv_dashboard():
                            all_users=all_users, search=search)
 
 
+@app.route("/user/info", methods=['GET', 'POST'])
+@login_required
+def user_info():
+    user = User.query.get(current_user.id)
+    msg = None
+    alert_type = "success"
+
+    if request.method == "POST":
+        # Cập nhật các trường thông tin trừ password, role và gói tập
+        user.name = request.form.get("name")
+        user.gioitinh = request.form.get("gioitinh")
+        user.sdt = request.form.get("sdt")
+        user.email = request.form.get("email")
+
+        db.session.commit()
+        msg = "Cập nhật thông tin thành công!"
+
+    return render_template("user_info.html", user=user, msg=msg, alert_type=alert_type)
+
+
 
 @app.route("/hlv/<int:plan_id>", methods=['GET', 'POST'])
 @login_required
@@ -134,7 +154,40 @@ def hlv_detail(plan_id):
 
 @app.route("/goitap", methods=['GET', 'POST'])
 def goitap_dashboard():
-    return render_template("goitap.html")
+    goitaps = GoiTap.query.all()
+    msg = None
+    alert_type = 'info'
+
+    goitap_id = request.args.get('chon')
+    if goitap_id:
+        if not current_user.is_authenticated:
+            msg = "Bạn cần đăng nhập để chọn gói tập!"
+            alert_type = "warning"
+        else:
+            user = User.query.get(current_user.id)
+            goitap = GoiTap.query.get_or_404(goitap_id)
+
+            if user.goitap_id == goitap.id:
+                msg = f"Bạn đang sở hữu gói tập '{goitap.name}' rồi, không thể đăng ký lại."
+                alert_type = "info"
+            else:
+                user.goitap_id = goitap.id
+                hoadon = HoaDon(
+                    name=f"Hóa đơn gói tập {goitap.name} của {user.name}",
+                    tongtien=goitap.giagoitap,
+                    trangthai=False,
+                    ngaythanhtoan=None,
+                    user_id=user.id
+                )
+                db.session.add(hoadon)
+                db.session.commit()
+                msg = f"Bạn đã chọn gói tập '{goitap.name}'. Hóa đơn đã được tạo!"
+                alert_type = "success"
+
+    return render_template("goitap.html", goitaps=goitaps, msg=msg, alert_type=alert_type)
+
+
+
 
 @app.route("/baitap", methods=['GET', 'POST'])
 def baitap_dashboard():
@@ -147,10 +200,20 @@ def quydinh_dashboard():
 @app.route("/tn", methods=['GET', 'POST'])
 @login_required
 def thungan_dashboard():
+    from datetime import datetime
+
     if request.method == 'POST':
         hoadons = dao.get_all_hoadon()
-        from datetime import datetime
 
+        # Xử lý xóa hóa đơn
+        for hd in hoadons:
+            if f"xoa_{hd.id}" in request.form:
+                db.session.delete(hd)
+                flash(f"Đã xóa hóa đơn '{hd.name}'", "success")
+        db.session.commit()  # commit xóa trước
+
+        # Lấy lại danh sách hóa đơn còn tồn tại để cập nhật trạng thái
+        hoadons = dao.get_all_hoadon()
         for hd in hoadons:
             hd.trangthai = f"trangthai_{hd.id}" in request.form
             hd.ngaythanhtoan = datetime.now() if hd.trangthai else None
@@ -161,6 +224,36 @@ def thungan_dashboard():
 
     hoadons = dao.get_all_hoadon()
     return render_template("thungan.html", hoadons=hoadons)
+
+
+
+@app.route("/tn/tao", methods=['GET', 'POST'])
+@login_required
+def tao_hoadon():
+    if request.method == 'POST':
+        user_id = int(request.form['user_id'])
+        user = User.query.get(user_id)
+
+        # Tạo tên hóa đơn tự động
+        name = f"Hóa đơn của {user.name}"
+        tongtien = int(request.form['tongtien'])
+
+        hd = HoaDon(
+            name=name,
+            user_id=user_id,
+            tongtien=tongtien,
+            trangthai=False,
+            ngaythanhtoan=None
+        )
+        db.session.add(hd)
+        db.session.commit()
+
+        flash("Tạo hóa đơn thành công!", "success")
+        return redirect(url_for('thungan_dashboard'))
+
+    # Lấy danh sách user role = USER từ dao
+    users = dao.get_all_users()
+    return render_template("tao_hoadon.html", users=users)
 
 
 @app.route("/lt", methods=['POST', 'GET'])

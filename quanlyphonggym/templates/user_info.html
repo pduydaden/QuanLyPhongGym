@@ -1,0 +1,58 @@
+{% extends 'layout/base.html' %}
+{% block conten %}
+
+<div class="container my-5">
+    <div class="user-info-container p-5 mx-auto"
+         style="max-width: 600px; background-color: rgba(255,255,255,0.9); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+
+        {% if msg %}
+        <div class="alert alert-{{ alert_type }} text-center" role="alert">
+            {{ msg }}
+        </div>
+        {% endif %}
+
+        <h2 class="text-center mb-4 fw-bold">Thông tin cá nhân</h2>
+
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Họ và tên</label>
+                <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Giới tính</label>
+                <select name="gioitinh" class="form-select" required>
+                    <option value="Nam" {% if user.gioitinh=='Nam' %}selected{% endif %}>Nam</option>
+                    <option value="Nữ" {% if user.gioitinh=='Nữ' %}selected{% endif %}>Nữ</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" name="sdt" class="form-control" value="{{ user.sdt }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" class="form-control" name="email" value="{{ user.email }}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Gói tập hiện tại</label>
+                <input type="text" class="form-control" value="{{ user.goitap.name }}" readonly>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg shadow">Cập nhật thông tin</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .user-info-container input[readonly] {
+        background-color: #e9ecef;
+    }
+</style>
+
+{% endblock %}

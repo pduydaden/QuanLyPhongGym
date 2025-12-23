@@ -9,3 +9,4 @@ admin = Admin(app=app, name="TDGym", theme=Bootstrap4Theme())
 
 admin.add_view(ModelView(GoiTap, db.session))
 admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(HoaDon, db.session))

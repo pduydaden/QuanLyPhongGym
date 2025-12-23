@@ -55,6 +55,10 @@ def get_users_by_hlv(hlv_id):
     """Lấy tất cả học viên do HLV quản lý"""
     return User.query.filter(User.hlv_id == hlv_id).all()
 
+def get_all_users():
+    """Lấy tất cả user có role USER"""
+    return User.query.filter_by(role=UserRole.USER).all()
+
 if __name__ == '__main__':
     with app.app_context():
         print(auth_user(email="u1@gmail.com", pswd="123"))
