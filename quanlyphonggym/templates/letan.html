@@ -1,50 +1,91 @@
 {% extends 'layout/base.html' %}
 
 {% block conten %}
-<h2 style="text-align:center;">Quản lý Học viên & HLV</h2>
+<div class="container my-5 p-4" style="
+    background: rgba(255,255,255,0.9);
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 2;">
 
-<!-- Form tìm kiếm + lọc trạng thái -->
-<form method="get" style="text-align:center; margin-bottom:10px;">
-    <input type="text" name="search" placeholder="Tìm theo tên hoặc email" value="{{ search or '' }}">
-    <select name="status">
-        <option value="">Tất cả học viên</option>
-        <option value="no" {% if status=='no' %}selected{% endif %}>Chưa có HLV</option>
-        <option value="yes" {% if status=='yes' %}selected{% endif %}>Đã có HLV</option>
-    </select>
-    <button type="submit">Lọc</button>
-</form>
+    <h2 class="text-center mb-5" style="color:#343a40;">Quản lý Học viên & HLV</h2>
 
-<form method="POST">
-<table border="1" cellpadding="10" cellspacing="0" style="width:90%; margin:auto; text-align:center;">
-    <tr>
-        <th>ID</th>
-        <th>Tên học viên</th>
-        <th>Email</th>
-        <th>HLV hiện tại</th>
-        <th>Chọn HLV mới</th>
-    </tr>
-    {% for user in users %}
-    <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.name }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.hlv.name if user.hlv else 'Chưa gán' }}</td>
-        <td>
-            <select name="hlv_{{ user.id }}">
-                <option value="none">-- Hủy HLV --</option>
-                {% for hlv in hlvs %}
-                <option value="{{ hlv.id }}" {% if user.hlv and user.hlv.id == hlv.id %}selected{% endif %}>
-                    {{ hlv.name }}
-                </option>
-                {% endfor %}
-            </select>
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+    <!-- Form tìm kiếm + lọc trạng thái -->
+    <form method="get" class="d-flex justify-content-center align-items-center mb-4 gap-3 flex-wrap">
+        <input type="text" name="search" class="form-control" style="max-width:250px;" placeholder="Tìm theo tên hoặc email" value="{{ search or '' }}">
+        <select name="status" class="form-select" style="max-width:180px;">
+            <option value="">Tất cả học viên</option>
+            <option value="no" {% if status=='no' %}selected{% endif %}>Chưa có HLV</option>
+            <option value="yes" {% if status=='yes' %}selected{% endif %}>Đã có HLV</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </form>
 
-<div style="text-align:center; margin-top:10px;">
-    <button type="submit">Cập nhật tất cả</button>
+    <form method="POST">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover text-center align-middle" style="background:white; border-radius:8px; overflow:hidden;">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên học viên</th>
+                        <th>Email</th>
+                        <th>HLV hiện tại</th>
+                        <th>Chọn HLV mới</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.hlv.name if user.hlv else 'Chưa gán' }}</td>
+                        <td>
+                            <select name="hlv_{{ user.id }}" class="form-select form-select-sm">
+                                <option value="none">-- Hủy HLV --</option>
+                                {% for hlv in hlvs %}
+                                <option value="{{ hlv.id }}" {% if user.hlv and user.hlv.id == hlv.id %}selected{% endif %}>
+                                    {{ hlv.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg shadow-sm">Cập nhật tất cả</button>
+        </div>
+    </form>
 </div>
-</form>
+
+<!-- Background Image mờ -->
+<div style="
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkarA_0L4R1NYltv8EEyaeKBoIA53bzLJFxg&s') no-repeat center center;
+    background-size: cover;
+    opacity: 0.1;
+    z-index: 1;
+    pointer-events: none;  /* << quan trọng */
+"></div>
+
+<style>
+    body {
+        background: #f0f4f8;
+    }
+    table.table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f9fafb;
+    }
+    table.table-hover tbody tr:hover {
+        background-color: #e9f1ff;
+    }
+    select.form-select {
+        min-width: 150px;
+    }
+</style>
 {% endblock %}

@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
         bt1 = BaiTap(name="Chống đẩy", nhomco="Vai, Tay sau", solan =5)
         bt2 = BaiTap(name="Ngồi xổm", nhomco="Mông",solan =10)
-        bt3 = BaiTap(name="Tấm ván", nhomco="có, lưng",solan =15)
+        bt3 = BaiTap(name="Tấm ván", nhomco="lưng",solan =15)
         bt4 = BaiTap(name="Cuộn tạ tay", nhomco="Tay trước",solan =20)
 
         db.session.add_all([bt1, bt2, bt3, bt4])

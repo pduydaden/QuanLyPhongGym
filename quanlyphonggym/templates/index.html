@@ -1,5 +1,67 @@
-{%extends 'layout/base.html'%}
+{% extends 'layout/base.html' %}
 
-{%block conten%}
-trang chu
-{%endblock%}
+{% block conten %}
+
+<!-- Hero Section -->
+<section class="bg-dark text-white text-center py-5" style="background: url('https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=1350&q=80') no-repeat center center; background-size: cover;">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Chào mừng đến với DT GYM</h1>
+        <p class="lead">Nơi nâng cao thể lực, sức khỏe và tinh thần của bạn</p>
+    </div>
+</section>
+
+<!-- Services / Features -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Dịch vụ nổi bật</h2>
+        <div class="row text-center g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-img-wrapper" style="height:220px; overflow:hidden;">
+                        <img src="https://nugym.vn/wp-content/uploads/2025/11/vE1BB8B-tri-nhom-co-trong-tap-gym.jpg.jpg" class="card-img-top" alt="Bài tập">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Bài tập đa dạng</h5>
+                        <p class="card-text">Hơn 200 bài tập cho mọi mục tiêu: tăng cơ, giảm mỡ, cải thiện sức bền.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-img-wrapper" style="height:220px; overflow:hidden;">
+                        <img src="https://beast.com.vn/wp-content/uploads/2024/08/Artboard-7-50-1.jpg" class="card-img-top" alt="HLV">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">HLV chuyên nghiệp</h5>
+                        <p class="card-text">Đội ngũ huấn luyện viên giàu kinh nghiệm, hướng dẫn từng cá nhân.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-img-wrapper" style="height:220px; overflow:hidden;">
+                        <img src="https://thenewgym.vn/wp-content/uploads/2025/09/the-new-gym-da-nang-10.webp" class="card-img-top" alt="Thiết bị">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Thiết bị hiện đại</h5>
+                        <p class="card-text">Phòng tập đầy đủ máy móc hiện đại, môi trường sạch sẽ và an toàn.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-primary text-white text-center py-5">
+    <div class="container">
+        <h2 class="fw-bold">Bắt đầu hành trình của bạn hôm nay!</h2>
+        <p class="mb-4">Tham gia DT GYM và trải nghiệm một môi trường tập luyện chuyên nghiệp.</p>
+        {% if not current_user.is_authenticated %}
+        <a href="/signup" class="btn btn-light btn-lg">Đăng ký ngay</a>
+        {%endif%}
+    </div>
+</section>
+
+{% endblock %}
+

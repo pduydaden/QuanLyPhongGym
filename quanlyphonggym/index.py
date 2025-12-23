@@ -132,7 +132,19 @@ def hlv_detail(plan_id):
 
     return render_template("hlv_detail.html", plan=plan, all_baitap=all_baitap, all_users=all_users)
 
+@app.route("/goitap", methods=['GET', 'POST'])
+def goitap_dashboard():
+    return render_template("goitap.html")
 
+@app.route("/baitap", methods=['GET', 'POST'])
+@login_required
+def baitap_dashboard():
+    return render_template("baitap.html")
+
+@app.route("/quydinh", methods=['GET', 'POST'])
+@login_required
+def quydinh_dashboard():
+    return render_template("quydinh.html")
 
 @app.route("/tn", methods=['GET', 'POST'])
 @login_required

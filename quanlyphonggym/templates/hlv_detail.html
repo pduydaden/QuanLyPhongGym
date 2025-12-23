@@ -1,70 +1,93 @@
 {% extends 'layout/base.html' %}
 {% block conten %}
 
-<h2>Chi tiết kế hoạch: {{ plan.name }}</h2>
+<div style="display:flex; justify-content:center; margin-top:30px;">
+    <div style="width:90%; max-width:900px; border:2px solid #ccc; border-radius:12px; padding:30px; background-color:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
 
-<form method="POST" style="display:flex; flex-direction:column; gap:15px;">
+        <h2 style="text-align:center; margin-bottom:30px; color:#333; border-bottom:2px solid #555; padding-bottom:5px;">
+            Chi tiết kế hoạch: {{ plan.name }}
+        </h2>
 
-    <!-- Chọn học viên -->
-    <div>
-        <label>Chọn học viên:</label>
-        <select name="user_id" style="min-width:200px;">
-            <option value="none">-- Chưa gắn --</option>
-            {% for user in all_users %}
-            <option value="{{ user.id }}" {% if plan.user_id==user.id %}selected{% endif %}>{{ user.name }}</option>
-            {% endfor %}
-        </select>
-    </div>
+        <form method="POST" style="display:flex; flex-direction:column; gap:20px;">
 
-    <!-- Bài tập hiện có -->
-    <div>
-        <h4>Bài tập trong kế hoạch:</h4>
-        <ul id="current-baitap-list">
-            {% for bt in plan.baitaps %}
-            <li>
-                {{ bt.name }} ({{ bt.nhomco }})
-                <input type="checkbox" name="remove_baitap_ids" value="{{ bt.id }}"> Xóa
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <!-- Thêm bài tập: popup checkbox giống hlv.html -->
-    <div>
-        <h4>Thêm bài tập:</h4>
-        <div style="position: relative; display: inline-block;">
-            <button type="button" onclick="document.getElementById('baitap-list').classList.toggle('hidden')">
-                Chọn bài tập
-            </button>
-            <div id="baitap-list" class="hidden" style="
-                position: absolute;
-                top: 100%;
-                left: 0;
-                background: white;
-                border: 1px solid #ccc;
-                z-index: 10;
-                max-height: 150px;
-                overflow-y: auto;
-                width: 250px;
-                padding: 5px;
-            ">
-                {% for bt in all_baitap %}
-                <label style="display:block;">
-                    <input type="checkbox" name="add_baitap_ids" value="{{ bt.id }}"> {{ bt.name }} ({{ bt.nhomco }})
-                </label>
-                {% endfor %}
+            <!-- Chọn học viên -->
+            <div style="display:flex; flex-direction:column; gap:5px;">
+                <label style="font-weight:bold; color:#555;">Chọn học viên:</label>
+                <select name="user_id" style="padding:8px; border:1px solid #ccc; border-radius:4px; min-width:200px;">
+                    <option value="none">-- Chưa gắn --</option>
+                    {% for user in all_users %}
+                    <option value="{{ user.id }}" {% if plan.user_id==user.id %}selected{% endif %}>{{ user.name }}</option>
+                    {% endfor %}
+                </select>
             </div>
-        </div>
-        <small>Chọn nhiều bài tập</small>
+
+            <!-- Bài tập hiện có -->
+            <div>
+                <h4 style="color:#555; margin-bottom:10px;">Bài tập trong kế hoạch:</h4>
+                <ul id="current-baitap-list" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;">
+                    {% for bt in plan.baitaps %}
+                    <li style="padding:8px 12px; border:1px solid #ddd; border-radius:6px; display:flex; justify-content:space-between; align-items:center; transition:0.2s; cursor:pointer;">
+                        <span>{{ bt.name }} ({{ bt.nhomco }})</span>
+                        <label style="cursor:pointer;">
+                            <input type="checkbox" name="remove_baitap_ids" value="{{ bt.id }}"> Xóa
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Thêm bài tập -->
+            <div>
+                <h4 style="color:#555; margin-bottom:10px;">Thêm bài tập:</h4>
+                <div style="position: relative; display: inline-block;">
+                    <button type="button" onclick="document.getElementById('baitap-list').classList.toggle('hidden')"
+                            style="padding:8px 12px; border:none; background-color:#333; color:white; border-radius:4px; cursor:pointer;">
+                        Chọn bài tập
+                    </button>
+                    <div id="baitap-list" class="hidden" style="
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        background: white;
+                        border: 1px solid #ccc;
+                        z-index: 10;
+                        max-height: 200px;
+                        overflow-y: auto;
+                        width: 250px;
+                        padding: 10px;
+                        border-radius:6px;
+                        box-shadow:0 2px 8px rgba(0,0,0,0.1);
+                        transition:0.3s;
+                    ">
+                        {% for bt in all_baitap %}
+                        <label style="display:block; margin-bottom:6px; cursor:pointer; padding:4px; border-radius:4px; transition:0.2s;">
+                            <input type="checkbox" name="add_baitap_ids" value="{{ bt.id }}"> {{ bt.name }} ({{ bt.nhomco }})
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <small style="color:#555;">Chọn nhiều bài tập</small>
+            </div>
+
+            <button type="submit" style="padding:10px; border:none; background-color:#333; color:white; border-radius:6px; width:180px; cursor:pointer; transition:0.2s;">
+                Cập nhật kế hoạch
+            </button>
+
+        </form>
+
+        <a href="{{ url_for('hlv_dashboard') }}" style="margin-top:20px; display:inline-block; color:#333; text-decoration:none; font-weight:bold; transition:0.2s;">
+            &larr; Quay lại danh sách
+        </a>
+
     </div>
-
-    <button type="submit" style="width:150px;">Cập nhật kế hoạch</button>
-</form>
-
-<a href="{{ url_for('hlv_dashboard') }}" style="margin-top:20px; display:inline-block;">Quay lại danh sách</a>
+</div>
 
 <style>
 .hidden { display: none; }
+button:hover { opacity:0.85; }
+#current-baitap-list li:hover { background-color:#f1f1f1; }
+#baitap-list label:hover { background-color:#f9f9f9; }
+a:hover { color:#555; }
 </style>
 
 {% endblock %}

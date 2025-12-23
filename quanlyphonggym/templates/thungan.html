@@ -1,31 +1,53 @@
 {% extends 'layout/base.html' %}
 
 {% block conten %}
+<div class="container my-5">
+    <h2 class="text-center mb-4 fw-bold">Quản lý Hóa đơn</h2>
 
-<form method="POST" style="text-align:center;">
-<table border="1" cellpadding="10" cellspacing="0" style="width:80%; margin:auto; text-align:center;">
-    <tr>
-        <th>ID</th>
-        <th>Tên hóa đơn</th>
-        <th>Người dùng</th>
-        <th>Tổng tiền</th>
-        <th>Trạng thái</th>
-        <th>Ngày thanh toán</th>
-    </tr>
-    {% for hd in hoadons %}
-    <tr>
-        <td>{{ hd.id }}</td>
-        <td>{{ hd.name }}</td>
-        <td>{{ hd.user.name if hd.user else 'Không xác định' }}</td>
-        <td>{{ hd.tongtien }}</td>
-        <td>
-            <input type="checkbox" name="trangthai_{{ hd.id }}" {% if hd.trangthai %}checked{% endif %}>
-        </td>
-        <td>{{ hd.ngaythanhtoan or '' }}</td>
-    </tr>
-    {% endfor %}
-</table>
-<button type="submit" style="margin-top:10px;">Cập nhật tất cả</button>
-</form>
+    <form method="POST">
+        <div class="table-responsive shadow p-3 mb-4 bg-white rounded">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên hóa đơn</th>
+                        <th>Người dùng</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày thanh toán</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for hd in hoadons %}
+                    <tr class="{% if loop.index0 % 2 == 0 %}table-light{% else %}table-white{% endif %}">
+                        <td>{{ hd.id }}</td>
+                        <td>{{ hd.name }}</td>
+                        <td>{{ hd.user.name if hd.user else 'Không xác định' }}</td>
+                        <td>{{ "{:,.0f}".format(hd.tongtien) }} VND</td>
+                        <td>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="trangthai_{{ hd.id }}" {% if hd.trangthai %}checked{% endif %}>
+                            </div>
+                        </td>
+                        <td>{{ hd.ngaythanhtoan or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
+        <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg shadow">Cập nhật tất cả</button>
+        </div>
+    </form>
+</div>
+
+<style>
+.table td, .table th {
+    vertical-align: middle;
+}
+.table-hover tbody tr:hover {
+    background-color: #e2f0ff;
+}
+</style>
 {% endblock %}

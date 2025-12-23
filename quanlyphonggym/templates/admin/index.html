@@ -1,12 +1,27 @@
-{%extends 'admin/master.html'%}
+{% extends 'admin/master.html' %}
 
 {% block access_control %}
-<form class="d-flex">
-    <a href="/logout" class="btn btn-primary">Đăng Xuất</a>
-</form>
+<nav style="background-color:#333; padding:10px; display:flex; justify-content:flex-end; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <a href="/logout" class="btn btn-primary" >Đăng Xuất</a>
+</nav>
 {% endblock %}
 
+{% block body %}
+<div style="display:flex; justify-content:center; margin-top:50px;">
+    <div style="width:90%; max-width:900px; padding:30px; background-color:#f9f9f9; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); text-align:center;">
+        <h1 style="color:#333; margin-bottom:20px;">Trang Quản Trị</h1>
+        <p style="color:#555; font-size:16px;">Chào mừng đến trang quản trị. Tại đây bạn có thể quản lý các chức năng hệ thống.</p>
+        <div style="margin-top:30px;">
+            <a href="/some-action" class="btn btn-secondary" style="padding:10px 20px; background-color:#333; color:white; border-radius:6px; text-decoration:none; margin:5px; display:inline-block; transition:0.2s;">
+                Xem Thống Kê
+            </a>
+        </div>
+    </div>
+</div>
 
-{%block body%}
-trang quna tri
-{%endblock%}
+<style>
+a.btn:hover {
+    opacity:0.85;
+}
+</style>
+{% endblock %}
