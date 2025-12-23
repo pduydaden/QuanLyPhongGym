@@ -17,20 +17,14 @@ class Base(db.Model):
 
 class UserRole(RoleEnum):
     USER = 1
-    TL = 2
+    LT = 2
     TN = 3
-    ADMIN = 4
+    HLV = 4
+    ADMIN = 5
 
 class GoiTap(Base):
     giagoitap = Column(Integer, nullable=False)
     nguoidung =relationship('User',lazy=True)
-
-class HoaDon(Base):
-    tongtien = Column(Integer, nullable=False)
-    trangthai = Column(Boolean, default=False)
-    ngaythanhtoan  = Column(DateTime,default= None)
-    user_id = Column(Integer, ForeignKey(GoiTap.id),nullable=False)
-
 
 class User(Base, UserMixin):
     gioitinh = Column(String(50), nullable=False)
@@ -42,18 +36,29 @@ class User(Base, UserMixin):
     role = Column(Enum(UserRole), default=UserRole.USER)
     hoadon = relationship('HoaDon', lazy=True)
 
+class HoaDon(Base):
+    tongtien = Column(Integer, nullable=False)
+    trangthai = Column(Boolean, default=False)
+    ngaythanhtoan  = Column(DateTime,default= None)
+    user_id = Column(Integer, ForeignKey(User.id),nullable=False)
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        # g1=GoiTap(name='1 thang',giagoitap=90000)
-        # g2 = GoiTap(name='2 thang', giagoitap=190000)
-        # g3 = GoiTap(name='12 thang', giagoitap=1190000)
-        # db.session.add_all([g1, g2, g3])
-        #
-        # import hashlib
-        # pswd = hashlib.md5("123".encode("utf-8")).hexdigest()
-        # u1 = User(name="Nguyen Van A", gioitinh="Nam", sdt="0973655534", email="u1@gmail.com", pswd=pswd,goitap_id=1)
-        # db.session.add(u1)
+        g1=GoiTap(name='1 thang',giagoitap=90000)
+        g2 = GoiTap(name='2 thang', giagoitap=190000)
+        g3 = GoiTap(name='12 thang', giagoitap=1190000)
+        db.session.add_all([g1, g2, g3])
+
+        import hashlib
+        pswd = hashlib.md5("123".encode("utf-8")).hexdigest()
+        u1 = User(name="Nguyen Van A", gioitinh="Nam", sdt="0973655534", email="u1", pswd=pswd,goitap_id=1)
+        u2 = User(name="HVL", gioitinh="Nam", sdt="0384614424", email="hlv", pswd=pswd,goitap_id=1, role=UserRole.HLV)
+        u3 = User(name="ADMIN", gioitinh="Nam", sdt="0747575464", email="admin", pswd=pswd,goitap_id=1, role=UserRole.ADMIN)
+        u4 = User(name="LETAN", gioitinh="Nữ", sdt="012356675777", email="letan", pswd=pswd,goitap_id=1, role=UserRole.LT)
+        u5 = User(name="THUNGAN", gioitinh="Nữ", sdt="09736485762", email="thungan", pswd=pswd,goitap_id=1, role=UserRole.TN)
+
+        db.session.add_all([u1, u2, u3, u4, u5])
 
 
         db.session.commit()
