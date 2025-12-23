@@ -1,19 +1,50 @@
-{%extends 'layout/base.html'%}
+{% extends 'layout/base.html' %}
 
-{%block conten%}
-{% if err_msg %}
-<div class="alert alert-danger">{{err_msg}}</div>
-{% endif %}
-<form  method="post">
-    <div class="mb-3 mt-3">
-        <label for="email" class="form-label">Email:</label>
-        <input type="text" class="form-control" id="email" placeholder="Enter email" name="email">
+{% block conten %}
+<div style="display:flex; justify-content:center; align-items:center; min-height:80vh; padding:20px; background: linear-gradient(135deg, #ece9e6, #ffffff);">
+    <div style="width:100%; max-width:500px; padding:50px; background-color:#fff; border-radius:12px; box-shadow:0 8px 25px rgba(0,0,0,0.15);">
+        <h2 style="text-align:center; margin-bottom:40px; color:#333;">Đăng Nhập</h2>
+
+        {% if err_msg %}
+        <div style="margin-bottom:25px; padding:12px; background-color:#f8d7da; color:#721c24; border-radius:6px; border:1px solid #f5c6cb;">
+            {{ err_msg }}
+        </div>
+        {% endif %}
+
+        <form method="post" style="display:flex; flex-direction:column; gap:20px;">
+            <div style="display:flex; flex-direction:column;">
+                <label for="email" style="margin-bottom:6px; font-weight:bold; color:#555;">Email:</label>
+                <input type="text" id="email" name="email" placeholder="Enter email"
+                       style="padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s; outline:none;"
+                       onfocus="this.style.borderColor='#333';" onblur="this.style.borderColor='#ccc';">
+            </div>
+
+            <div style="display:flex; flex-direction:column;">
+                <label for="pwd" style="margin-bottom:6px; font-weight:bold; color:#555;">Password:</label>
+                <input type="password" id="pwd" name="pswd" placeholder="Enter password"
+                       style="padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s; outline:none;"
+                       onfocus="this.style.borderColor='#333';" onblur="this.style.borderColor='#ccc';">
+            </div>
+
+            <div style="display:flex; gap:15px; justify-content:center; margin-top:15px;">
+                <button type="submit" style="flex:1; padding:12px; border:none; border-radius:8px; background-color:#333; color:white; font-weight:bold; cursor:pointer; transition:0.3s;">
+                    Đăng Nhập
+                </button>
+                <a href="/signup" style="flex:1; padding:12px; text-align:center; border:none; border-radius:8px; background-color:#555; color:white; font-weight:bold; text-decoration:none; display:flex; justify-content:center; align-items:center; transition:0.3s;">
+                    Đăng Ký
+                </a>
+            </div>
+        </form>
     </div>
-    <div class="mb-3">
-        <label for="pwd" class="form-label">Password:</label>
-        <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pswd">
-    </div>
-    <button type="submit" class="btn btn-primary">Đăng Nhập</button>
-    <a href="/signup" class="btn btn-primary">Đăng Ký</a>
-</form>
-{%endblock%}
+</div>
+
+<style>
+button:hover {
+    background-color:#555;
+}
+a:hover {
+    background-color:#333;
+}
+</style>
+
+{% endblock %}
