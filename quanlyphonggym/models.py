@@ -1,38 +1,59 @@
 import json
 
 from quanlyphonggym import db, app
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Enum
 from sqlalchemy.orm import relationship
+from datetime import datetime
+from enum import Enum as RoleEnum
+from flask_login import UserMixin
 
 
-class GoiTap(db.Model):
-    magoitap = Column(Integer, primary_key=True, autoincrement=True)
-    tengoitap = Column(String(50),unique=True, nullable=False)
-    giagoitap = Column(Integer, nullable=False)
-    nguoidung =relationship('NguoiDung',lazy=True)
-
-class NguoiDung(db.Model):
+class Base(db.Model):
+    __abstract__ = True
     id = Column(Integer, primary_key=True, autoincrement=True)
-    hoten = Column(String(50))
-    gioitinh = Column(String(50))
-    namsinh = Column(Integer)
-    sdt = Column(String(50))
-    email = Column(String(50))
-    pswd = Column(String(50))
-    vaitro = Column(String(50))
-    goitap_id = Column(Integer, ForeignKey(GoiTap.magoitap),nullable=False)
+    name = Column(String(150), unique=True, nullable=False)
+    active = Column(Boolean, default=True)
+    create_time = Column(DateTime, default=datetime.now())
+
+class UserRole(RoleEnum):
+    USER = 1
+    TL = 2
+    TN = 3
+    ADMIN = 4
+
+class GoiTap(Base):
+    giagoitap = Column(Integer, nullable=False)
+    nguoidung =relationship('User',lazy=True)
+
+class HoaDon(Base):
+    tongtien = Column(Integer, nullable=False)
+    trangthai = Column(Boolean, default=False)
+    ngaythanhtoan  = Column(DateTime,default= None)
+    user_id = Column(Integer, ForeignKey(GoiTap.id),nullable=False)
+
+
+class User(Base, UserMixin):
+    gioitinh = Column(String(50), nullable=False)
+    sdt = Column(String(50), nullable=False)
+    email = Column(String(50), unique=True, nullable=False)
+    pswd = Column(String(50), nullable=False)
+    avatar = Column(String(300), default="https://png.pngtree.com/png-vector/20220709/ourmid/pngtree-businessman-user-avatar-wearing-suit-with-red-tie-png-image_5809521.png")
+    goitap_id = Column(Integer, ForeignKey(GoiTap.id),nullable=False)
+    role = Column(Enum(UserRole), default=UserRole.USER)
+    hoadon = relationship('HoaDon', lazy=True)
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        # g1=GoiTap(tengoitap='1 thang',giagoitap=90000)
-        # g2 = GoiTap(tengoitap='2 thang', giagoitap=190000)
-        # g3 = GoiTap(tengoitap='12 thang', giagoitap=1190000)
+        # g1=GoiTap(name='1 thang',giagoitap=90000)
+        # g2 = GoiTap(name='2 thang', giagoitap=190000)
+        # g3 = GoiTap(name='12 thang', giagoitap=1190000)
+        # db.session.add_all([g1, g2, g3])
         #
-        # db.session.add_all([g1,g2,g3])
-        with open("data/nguoidung.json", encoding="utf-8") as f:
-            nguoidung = json.load(f)
-            for p in nguoidung:
-                db.session.add(NguoiDung(**p))
+        # import hashlib
+        # pswd = hashlib.md5("123".encode("utf-8")).hexdigest()
+        # u1 = User(name="Nguyen Van A", gioitinh="Nam", sdt="0973655534", email="u1@gmail.com", pswd=pswd,goitap_id=1)
+        # db.session.add(u1)
+
 
         db.session.commit()

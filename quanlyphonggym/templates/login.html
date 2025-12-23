@@ -1,6 +1,9 @@
 {%extends 'layout/base.html'%}
 
 {%block conten%}
+{% if err_msg %}
+<div class="alert alert-danger">{{err_msg}}</div>
+{% endif %}
 <form  method="post">
     <div class="mb-3 mt-3">
         <label for="email" class="form-label">Email:</label>
