@@ -24,7 +24,7 @@ class UserRole(RoleEnum):
 
 class GoiTap(Base):
     giagoitap = Column(Integer, nullable=False)
-    nguoidung =relationship('User',lazy=True)
+    nguoidung =relationship('User',lazy=True, back_populates='goitap')
 
 class User(Base, UserMixin):
     gioitinh = Column(String(50), nullable=False)
@@ -35,8 +35,8 @@ class User(Base, UserMixin):
     goitap_id = Column(Integer, ForeignKey(GoiTap.id),nullable=False)
     hlv_id = Column(Integer, ForeignKey('user.id'), nullable=True)
     role = Column(Enum(UserRole), default=UserRole.USER)
-    hoadon = relationship('HoaDon', lazy=True)
-    goitap = relationship('GoiTap', lazy=True)
+    hoadons = relationship('HoaDon', lazy=True, back_populates='user')
+    goitap = relationship('GoiTap', lazy=True, back_populates='nguoidung', overlaps="nguoidung")
     hlv = relationship('User', remote_side='User.id', lazy=True)
 
 class BaiTap(Base):
@@ -65,7 +65,7 @@ class HoaDon(Base):
     trangthai = Column(Boolean, default=False)
     ngaythanhtoan  = Column(DateTime,default= None)
     user_id = Column(Integer, ForeignKey(User.id),nullable=False)
-    user = relationship('User', backref='hoadons', lazy=True)
+    user = relationship('User', back_populates='hoadons', lazy=True)
 
 if __name__ == "__main__":
     with app.app_context():

@@ -1,8 +1,10 @@
 import hashlib
+from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
+from sqlalchemy import extract, func
 
 from quanlyphonggym import dao, app, login, admin, db
 from models import User, HoaDon, GoiTap, UserRole, BaiTap, KeHoachTap
@@ -344,6 +346,43 @@ def logout_my_user():
 @login.user_loader
 def load_user(id):
     return dao.get_user_by_id(id)
+
+
+@app.route("/thongke")
+def thongke():
+    # Giả sử thống kê năm hiện tại
+    year = datetime.now().year
+    months = [f"{i}" for i in range(1,13)]
+
+    # Số hội viên theo tháng
+    members_counts = []
+    for m in range(1,13):
+        count = User.query.filter(
+            extract('month', User.create_time)==m,
+            extract('year', User.create_time)==year
+        ).count()
+        members_counts.append(count)
+
+    # Doanh thu theo tháng
+    revenue = []
+    for m in range(1,13):
+        total = db.session.query(func.sum(HoaDon.tongtien)).filter(
+            extract('month', HoaDon.create_time)==m,
+            extract('year', HoaDon.create_time)==year,
+            HoaDon.trangthai==True
+        ).scalar() or 0
+        revenue.append(total)
+
+    # Số hội viên đang hoạt động (ví dụ active=True)
+    active_members = User.query.filter_by(active=True).count()
+
+    return render_template("admin/thongke.html",
+                           months=months,
+                           members_counts=members_counts,
+                           revenue=revenue,
+                           active_members=active_members,
+                           year=year)
+
 
 if __name__ == "__main__":
     with app.app_context():

@@ -19,11 +19,17 @@
 
             {% if current_user.is_authenticated %}
             <form class="d-flex align-items-center gap-2">
+
+
+                {% if current_user.role.value == 1 %}
                 <a href="{{ url_for('user_info') }}"
                    class="btn btn-light text-dark d-flex justify-content-center align-items-center shadow-sm"
                    style="height: 40px; min-width: 100px; border-radius: 10px;">
                     Thông tin
                 </a>
+                {% endif %}
+
+
                 <div class="d-flex justify-content-center align-items-center text-white px-2">
                     {{ current_user.name }}
                 </div>
@@ -38,7 +44,6 @@
                 <a href="/login" class="btn btn-primary">Đăng Nhập</a>
             </form>
             {% endif %}
-
         </div>
     </div>
 </nav>

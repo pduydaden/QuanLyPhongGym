@@ -1,0 +1,84 @@
+{% extends 'layout/base.html' %}
+
+{% block conten %}
+<div style="min-height: 90vh; display:flex; justify-content:center; align-items:center; padding:20px;">
+    <div style="width:100%; max-width:1200px; background-color:#f9f9f9; padding:40px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); text-align:center;">
+        <h1 style="font-size:2.5rem; color:#333; margin-bottom:30px;">Thống Kê Hệ Thống</h1>
+
+        <p style="font-size:1.5rem; margin-bottom:50px;">
+            <strong>Số hội viên đang hoạt động:</strong> {{ active_members }}
+        </p>
+
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-around; gap:40px;">
+            <!-- Biểu đồ số hội viên -->
+            <div style="flex:1 1 45%; min-width:300px; display:flex; flex-direction:column; align-items:center;">
+                <h3 style="font-size:1.8rem; margin-bottom:20px;">Số hội viên đăng ký theo tháng</h3>
+                <div style="width:100%; height:400px;">
+                    <canvas id="membersChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Biểu đồ doanh thu -->
+            <div style="flex:1 1 45%; min-width:300px; display:flex; flex-direction:column; align-items:center;">
+                <h3 style="font-size:1.8rem; margin-bottom:20px;">Doanh thu theo tháng</h3>
+                <div style="width:100%; height:400px;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const months = {{ months|tojson }};
+    const membersCounts = {{ members_counts|tojson }};
+    const revenue = {{ revenue|tojson }};
+
+    // Biểu đồ số hội viên
+    new Chart(document.getElementById('membersChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Số hội viên',
+                data: membersCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Biểu đồ doanh thu
+    new Chart(document.getElementById('revenueChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: months,
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: revenue,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}
