@@ -1,5 +1,31 @@
-{%extends 'layout/base.html'%}
+{% extends 'layout/base.html' %}
 
-{%block conten%}
-thungan
-{%endblock%}
+{% block conten %}
+
+<form method="POST" style="text-align:center;">
+<table border="1" cellpadding="10" cellspacing="0" style="width:80%; margin:auto; text-align:center;">
+    <tr>
+        <th>ID</th>
+        <th>Tên hóa đơn</th>
+        <th>Người dùng</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th>Ngày thanh toán</th>
+    </tr>
+    {% for hd in hoadons %}
+    <tr>
+        <td>{{ hd.id }}</td>
+        <td>{{ hd.name }}</td>
+        <td>{{ hd.user.name if hd.user else 'Không xác định' }}</td>
+        <td>{{ hd.tongtien }}</td>
+        <td>
+            <input type="checkbox" name="trangthai_{{ hd.id }}" {% if hd.trangthai %}checked{% endif %}>
+        </td>
+        <td>{{ hd.ngaythanhtoan or '' }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<button type="submit" style="margin-top:10px;">Cập nhật tất cả</button>
+</form>
+
+{% endblock %}

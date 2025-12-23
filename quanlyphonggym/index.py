@@ -1,11 +1,12 @@
 import hashlib
 
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
 
 from quanlyphonggym import dao, app, login, admin, db
-from models import User, HoaDon, GoiTap, UserRole
+from models import User, HoaDon, GoiTap, UserRole, BaiTap, KeHoachTap
+from quanlyphonggym.dao import get_users_by_hlv
 
 
 @app.route("/")
@@ -47,20 +48,137 @@ def login_my_user():
 
     return render_template("login.html", err_msg=err_msg)
 
-@app.route("/hlv")
+@app.route("/hlv", methods=['GET', 'POST'])
 @login_required
 def hlv_dashboard():
-    return render_template("hlv.html")
+    search = request.args.get('search', '')
 
-@app.route("/lt")
+    # POST: thêm hoặc xóa kế hoạch
+    if request.method == 'POST':
+        # Thêm kế hoạch
+        plan_name = request.form.get('plan_name')
+        user_id = request.form.get('user_id')
+        baitap_ids = request.form.getlist('add_baitap_id')
+
+        if plan_name:
+            plan = KeHoachTap(name=plan_name, hlv_id=current_user.id)
+            if user_id:
+                plan.user_id = int(user_id)
+            db.session.add(plan)
+            db.session.commit()
+
+            # Gắn bài tập
+            for bt_id in baitap_ids:
+                bt = BaiTap.query.get(int(bt_id))
+                if bt:
+                    plan.baitaps.append(bt)
+            db.session.commit()
+            flash("Tạo kế hoạch thành công!", "success")
+            return redirect(url_for('hlv_dashboard'))
+
+        # Xóa kế hoạch
+        delete_plan_id = request.form.get('delete_plan_id')
+        if delete_plan_id:
+            plan = KeHoachTap.query.get(int(delete_plan_id))
+            if plan:
+                db.session.delete(plan)
+                db.session.commit()
+                flash("Xóa kế hoạch thành công!", "success")
+            return redirect(url_for('hlv_dashboard'))
+
+    # GET: load dữ liệu
+    query = KeHoachTap.query.filter_by(hlv_id=current_user.id)
+    if search:
+        query = query.filter(KeHoachTap.name.ilike(f"%{search}%"))
+    plans = query.order_by(KeHoachTap.id.asc()).all()  # ID từ 1 → hết
+
+    all_baitap = BaiTap.query.all()
+    all_users = User.query.filter_by(hlv_id=current_user.id).all()
+
+    return render_template("hlv.html", plans=plans, all_baitap=all_baitap,
+                           all_users=all_users, search=search)
+
+
+
+@app.route("/hlv/<int:plan_id>", methods=['GET', 'POST'])
 @login_required
-def letan_dashboard():
-    return render_template("letan.html")
+def hlv_detail(plan_id):
+    plan = dao.get_plan(plan_id)
+    all_baitap = dao.get_all_baitap()
+    all_users = dao.get_users_by_hlv(current_user.id)
 
-@app.route("/tn")
+    if request.method == 'POST':
+        # Cập nhật học viên
+        user_id = request.form.get('user_id')
+        plan.user_id = int(user_id) if user_id and user_id != 'none' else None
+
+        # Thêm bài tập
+        add_baitap_ids = request.form.getlist('add_baitap_ids')
+        for bt_id in add_baitap_ids:
+            bt = BaiTap.query.get(int(bt_id))
+            if bt and bt not in plan.baitaps:
+                plan.baitaps.append(bt)
+
+        # Xóa bài tập
+        remove_baitap_ids = request.form.getlist('remove_baitap_ids')
+        for bt_id in remove_baitap_ids:
+            bt = BaiTap.query.get(int(bt_id))
+            if bt and bt in plan.baitaps:
+                plan.baitaps.remove(bt)
+
+        db.session.commit()
+        flash("Cập nhật kế hoạch thành công!", "success")
+        return redirect(url_for('hlv_detail', plan_id=plan.id))
+
+    return render_template("hlv_detail.html", plan=plan, all_baitap=all_baitap, all_users=all_users)
+
+
+
+@app.route("/tn", methods=['GET', 'POST'])
 @login_required
 def thungan_dashboard():
-    return render_template("thungan.html")
+    if request.method == 'POST':
+        hoadons = dao.get_all_hoadon()
+        from datetime import datetime
+
+        for hd in hoadons:
+            hd.trangthai = f"trangthai_{hd.id}" in request.form
+            hd.ngaythanhtoan = datetime.now() if hd.trangthai else None
+
+        db.session.commit()
+        flash("Cập nhật trạng thái hóa đơn thành công!", "success")
+        return redirect(url_for('thungan_dashboard'))
+
+    hoadons = dao.get_all_hoadon()
+    return render_template("thungan.html", hoadons=hoadons)
+
+
+@app.route("/lt", methods=['POST', 'GET'])
+@login_required
+def letan_dashboard():
+    if request.method == 'POST':
+        users = User.query.filter(User.role != UserRole.HLV).all()
+        for user in users:
+            hlv_id = request.form.get(f"hlv_{user.id}")
+            if hlv_id:
+                if hlv_id == 'none':
+                    user.hlv = None
+                else:
+                    hlv = User.query.get(int(hlv_id))
+                    if hlv:
+                        user.hlv = hlv
+        db.session.commit()
+        flash("Cập nhật HLV cho các học viên thành công!", "success")
+        return redirect(url_for('letan_dashboard'))
+
+    # GET
+    search = request.args.get('search')
+    status = request.args.get('status')
+    users = dao.get_users_by_hlv_status(status, search)
+    hlvs = dao.get_all_hlv()
+
+    return render_template("letan.html", users=users, hlvs=hlvs, search=search, status=status)
+
 
 @app.route("/signup", methods=['GET', 'POST'])
 def signup_my_user():

@@ -1,0 +1,70 @@
+{% extends 'layout/base.html' %}
+{% block conten %}
+
+<h2>Chi tiết kế hoạch: {{ plan.name }}</h2>
+
+<form method="POST" style="display:flex; flex-direction:column; gap:15px;">
+
+    <!-- Chọn học viên -->
+    <div>
+        <label>Chọn học viên:</label>
+        <select name="user_id" style="min-width:200px;">
+            <option value="none">-- Chưa gắn --</option>
+            {% for user in all_users %}
+            <option value="{{ user.id }}" {% if plan.user_id==user.id %}selected{% endif %}>{{ user.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- Bài tập hiện có -->
+    <div>
+        <h4>Bài tập trong kế hoạch:</h4>
+        <ul id="current-baitap-list">
+            {% for bt in plan.baitaps %}
+            <li>
+                {{ bt.name }} ({{ bt.nhomco }})
+                <input type="checkbox" name="remove_baitap_ids" value="{{ bt.id }}"> Xóa
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Thêm bài tập: popup checkbox giống hlv.html -->
+    <div>
+        <h4>Thêm bài tập:</h4>
+        <div style="position: relative; display: inline-block;">
+            <button type="button" onclick="document.getElementById('baitap-list').classList.toggle('hidden')">
+                Chọn bài tập
+            </button>
+            <div id="baitap-list" class="hidden" style="
+                position: absolute;
+                top: 100%;
+                left: 0;
+                background: white;
+                border: 1px solid #ccc;
+                z-index: 10;
+                max-height: 150px;
+                overflow-y: auto;
+                width: 250px;
+                padding: 5px;
+            ">
+                {% for bt in all_baitap %}
+                <label style="display:block;">
+                    <input type="checkbox" name="add_baitap_ids" value="{{ bt.id }}"> {{ bt.name }} ({{ bt.nhomco }})
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        <small>Chọn nhiều bài tập</small>
+    </div>
+
+    <button type="submit" style="width:150px;">Cập nhật kế hoạch</button>
+</form>
+
+<a href="{{ url_for('hlv_dashboard') }}" style="margin-top:20px; display:inline-block;">Quay lại danh sách</a>
+
+<style>
+.hidden { display: none; }
+</style>
+
+{% endblock %}

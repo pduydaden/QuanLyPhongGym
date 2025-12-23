@@ -1,5 +1,50 @@
-{%extends 'layout/base.html'%}
+{% extends 'layout/base.html' %}
 
-{%block conten%}
-letan
-{%endblock%}
+{% block conten %}
+<h2 style="text-align:center;">Quản lý Học viên & HLV</h2>
+
+<!-- Form tìm kiếm + lọc trạng thái -->
+<form method="get" style="text-align:center; margin-bottom:10px;">
+    <input type="text" name="search" placeholder="Tìm theo tên hoặc email" value="{{ search or '' }}">
+    <select name="status">
+        <option value="">Tất cả học viên</option>
+        <option value="no" {% if status=='no' %}selected{% endif %}>Chưa có HLV</option>
+        <option value="yes" {% if status=='yes' %}selected{% endif %}>Đã có HLV</option>
+    </select>
+    <button type="submit">Lọc</button>
+</form>
+
+<form method="POST">
+<table border="1" cellpadding="10" cellspacing="0" style="width:90%; margin:auto; text-align:center;">
+    <tr>
+        <th>ID</th>
+        <th>Tên học viên</th>
+        <th>Email</th>
+        <th>HLV hiện tại</th>
+        <th>Chọn HLV mới</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.id }}</td>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.hlv.name if user.hlv else 'Chưa gán' }}</td>
+        <td>
+            <select name="hlv_{{ user.id }}">
+                <option value="none">-- Hủy HLV --</option>
+                {% for hlv in hlvs %}
+                <option value="{{ hlv.id }}" {% if user.hlv and user.hlv.id == hlv.id %}selected{% endif %}>
+                    {{ hlv.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<div style="text-align:center; margin-top:10px;">
+    <button type="submit">Cập nhật tất cả</button>
+</div>
+</form>
+{% endblock %}
