@@ -7,7 +7,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy import extract, func
 
 from quanlyphonggym import dao, app, login, admin, db
-from models import User, HoaDon, GoiTap, UserRole, BaiTap, KeHoachTap
+from models import User, HoaDon, GoiTap, UserRole, BaiTap, KeHoachTap, KeHoach_BaiTap
 from quanlyphonggym.dao import get_users_by_hlv
 
 
@@ -62,13 +62,21 @@ def hlv_dashboard():
             plan = KeHoachTap(name=plan_name, hlv_id=current_user.id)
             if user_id:
                 plan.user_id = int(user_id)
+
             db.session.add(plan)
             db.session.commit()
 
             for bt_id in baitap_ids:
-                bt = BaiTap.query.get(int(bt_id))
-                if bt:
-                    plan.baitaps.append(bt)
+                solan = request.form.get(f"solan_{bt_id}")
+
+                if solan and solan.isdigit():
+                    solan = int(solan)
+                else:
+                    solan = 1
+
+                kb = KeHoach_BaiTap(kehoachtap_id=plan.id,baitap_id=int(bt_id),solan=solan )
+                db.session.add(kb)
+
             db.session.commit()
             flash("Tạo kế hoạch thành công!", "success")
             return redirect(url_for('hlv_dashboard'))
@@ -77,6 +85,7 @@ def hlv_dashboard():
         if delete_plan_id:
             plan = KeHoachTap.query.get(int(delete_plan_id))
             if plan:
+                KeHoach_BaiTap.query.filter_by(kehoachtap_id=plan.id).delete()
                 db.session.delete(plan)
                 db.session.commit()
                 flash("Xóa kế hoạch thành công!", "success")
@@ -90,8 +99,13 @@ def hlv_dashboard():
     all_baitap = BaiTap.query.all()
     all_users = User.query.filter_by(hlv_id=current_user.id).all()
 
-    return render_template("hlv.html", plans=plans, all_baitap=all_baitap,
-                           all_users=all_users, search=search)
+    return render_template(
+        "hlv.html",
+        plans=plans,
+        all_baitap=all_baitap,
+        all_users=all_users,
+        search=search
+    )
 
 
 @app.route("/user/info", methods=['GET', 'POST'])
@@ -114,34 +128,58 @@ def user_info():
 
 
 
+
 @app.route("/hlv/<int:plan_id>", methods=['GET', 'POST'])
 @login_required
 def hlv_detail(plan_id):
-    plan = dao.get_plan(plan_id)
-    all_baitap = dao.get_all_baitap()
-    all_users = dao.get_users_by_hlv(current_user.id)
+    plan = KeHoachTap.query.get_or_404(plan_id)
+    all_baitap = BaiTap.query.all()
+    all_users = User.query.filter_by(hlv_id=current_user.id).all()
 
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         plan.user_id = int(user_id) if user_id and user_id != 'none' else None
 
+        for kb in plan.baitaps:
+            new_solan = request.form.get(f"solan_{kb.baitap_id}")
+            if new_solan:
+                kb.solan = int(new_solan)
+
         add_baitap_ids = request.form.getlist('add_baitap_ids')
         for bt_id in add_baitap_ids:
-            bt = BaiTap.query.get(int(bt_id))
-            if bt and bt not in plan.baitaps:
-                plan.baitaps.append(bt)
+            solan = request.form.get(f"solan_new_{bt_id}")
+            solan = int(solan) if solan and solan.isdigit() else 1
+
+            exist = KeHoach_BaiTap.query.filter_by(
+                kehoachtap_id=plan.id,
+                baitap_id=int(bt_id)
+            ).first()
+
+            if not exist:
+                kb = KeHoach_BaiTap(kehoachtap_id=plan.id,baitap_id=int(bt_id), solan=solan
+                )
+                db.session.add(kb)
 
         remove_baitap_ids = request.form.getlist('remove_baitap_ids')
         for bt_id in remove_baitap_ids:
-            bt = BaiTap.query.get(int(bt_id))
-            if bt and bt in plan.baitaps:
-                plan.baitaps.remove(bt)
+            kb = KeHoach_BaiTap.query.filter_by(kehoachtap_id=plan.id,baitap_id=int(bt_id)
+            ).first()
+            if kb:
+                db.session.delete(kb)
 
         db.session.commit()
         flash("Cập nhật kế hoạch thành công!", "success")
         return redirect(url_for('hlv_detail', plan_id=plan.id))
 
-    return render_template("hlv_detail.html", plan=plan, all_baitap=all_baitap, all_users=all_users)
+    return render_template(
+        "hlv_detail.html",
+        plan=plan,
+        all_baitap=all_baitap,
+        all_users=all_users
+    )
+
+
+
 
 
 @app.route("/goitap", methods=['GET', 'POST'])
@@ -173,11 +211,21 @@ def goitap_dashboard():
     return render_template("goitap.html", goitaps=goitaps, msg=msg, alert_type=alert_type)
 
 
+@app.route("/baitap")
+@app.route("/baitap/page/<int:page>")
+def baitap_list(page=1):
+    PER_PAGE = 9
 
+    pagination = BaiTap.query.order_by(BaiTap.id.asc()).paginate(
+        page=page, per_page=PER_PAGE, error_out=False
+    )
 
-@app.route("/baitap", methods=['GET', 'POST'])
-def baitap_dashboard():
-    return render_template("baitap.html")
+    return render_template(
+        "baitap.html",
+        baitaps=pagination.items,
+        page=page,
+        total_pages=pagination.pages
+    )
 
 
 @app.route("/tn", methods=['GET', 'POST'])

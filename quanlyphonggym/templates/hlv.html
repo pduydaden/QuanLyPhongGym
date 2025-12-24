@@ -4,9 +4,9 @@
 <div style="display:flex; justify-content:center; margin-top:30px;">
     <div style="width:95%; max-width:1200px; border:2px solid #ccc; border-radius:12px; padding:30px; background-color:#fff; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
 
-        <h2 style="margin-bottom: 30px; color: #333; border-bottom: 2px solid #555; padding-bottom: 5px; text-align:center;">Quản lý Kế hoạch tập</h2>
+        <h2 style="margin-bottom: 30px; color: #333; border-bottom: 2px solid #555; padding-bottom: 5px; text-align:center;">
+            Quản lý Kế hoạch tập</h2>
 
-        <!-- Thêm kế hoạch -->
         <div style="margin-bottom:30px; padding:20px; background-color:#f9f9f9; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
             <h3 style="margin-bottom:15px; color:#555;">Thêm Kế Hoạch Mới</h3>
             <form method="POST" style="display:flex; flex-direction: column; gap:15px;">
@@ -14,9 +14,9 @@
                 <input type="text" name="plan_name" placeholder="Tên kế hoạch" required
                        style="padding:8px; border:1px solid #ccc; border-radius:4px;">
 
-                <!-- Chọn học viên + chọn bài tập ngang hàng -->
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <select name="user_id" required style="flex:1; min-width:200px; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                    <select name="user_id" required
+                            style="flex:1; min-width:200px; padding:8px; border:1px solid #ccc; border-radius:4px;">
                         <option value="">-- Chọn học viên --</option>
                         {% for user in all_users %}
                         <option value="{{ user.id }}">{{ user.name }}</option>
@@ -24,7 +24,8 @@
                     </select>
 
                     <div style="position: relative; flex:1; min-width:200px;">
-                        <button type="button" onclick="document.getElementById('baitap-list').classList.toggle('hidden')"
+                        <button type="button"
+                                onclick="document.getElementById('baitap-list').classList.toggle('hidden')"
                                 style="padding:8px 12px; border:none; background-color:#555; color:white; border-radius:4px; cursor:pointer; width:100%;">
                             Chọn bài tập
                         </button>
@@ -44,7 +45,12 @@
                         ">
                             {% for bt in all_baitap %}
                             <label style="display:block; margin-bottom:5px; cursor:pointer;">
-                                <input type="checkbox" name="add_baitap_id" value="{{ bt.id }}"> {{ bt.name }} ({{ bt.nhomco }})
+                                <label style="display:block; margin-bottom:5px;">
+                                    <input type="checkbox" name="add_baitap_id" value="{{ bt.id }}">
+                                    {{ bt.name }} ({{ bt.nhomco }})
+                                    <input type="number" name="solan_{{ bt.id }}" placeholder="Số lần"
+                                           style="width:70px; margin-left:10px;">
+                                </label>
                             </label>
                             {% endfor %}
                         </div>
@@ -52,7 +58,8 @@
                 </div>
                 <small style="color:#555;">Chọn nhiều bài tập</small>
 
-                <button type="submit" style="padding:10px; border:none; background-color:#333; color:white; border-radius:4px; cursor:pointer; width:150px;">
+                <button type="submit"
+                        style="padding:10px; border:none; background-color:#333; color:white; border-radius:4px; cursor:pointer; width:150px;">
                     Thêm Kế Hoạch
                 </button>
             </form>
@@ -60,48 +67,46 @@
 
         <hr style="margin:30px 0; border:0; border-top:1px solid #ccc;">
 
-        <!-- Thanh tìm kiếm -->
         <div style="margin-bottom:20px;">
             <form method="GET" action="{{ url_for('hlv_dashboard') }}" style="display:flex; gap:10px; flex-wrap:wrap;">
                 <input type="text" name="search" placeholder="Tìm kiếm kế hoạch..." value="{{ search or '' }}"
                        style="flex:1; min-width:200px; padding:8px; border:1px solid #ccc; border-radius:4px;">
-                <button type="submit" style="padding:8px 12px; border:none; background-color:#333; color:white; border-radius:4px; cursor:pointer;">
+                <button type="submit"
+                        style="padding:8px 12px; border:none; background-color:#333; color:white; border-radius:4px; cursor:pointer;">
                     Tìm
                 </button>
             </form>
         </div>
 
-        <!-- Danh sách kế hoạch -->
         <h3 style="margin-bottom:15px; color:#555;">Danh sách Kế Hoạch</h3>
         <table style="width:100%; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
             <thead style="background-color:#f1f1f1;">
-                <tr>
-                    <th style="padding:10px; border:1px solid #ddd;">ID</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Tên kế hoạch</th>
-                    <th style="padding:10px; border:1px solid #ddd;">HLV quản lý</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Học viên</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Số bài tập</th>
-                    <th style="padding:10px; border:1px solid #ddd;">Hành động</th>
-                </tr>
+            <tr>
+                <th style="padding:10px; border:1px solid #ddd;">ID</th>
+                <th style="padding:10px; border:1px solid #ddd;">Tên kế hoạch</th>
+                <th style="padding:10px; border:1px solid #ddd;">HLV quản lý</th>
+                <th style="padding:10px; border:1px solid #ddd;">Học viên</th>
+                <th style="padding:10px; border:1px solid #ddd;">Số bài tập</th>
+                <th style="padding:10px; border:1px solid #ddd;">Hành động</th>
+            </tr>
             </thead>
             <tbody>
-                {% for plan in plans %}
-                <tr style="text-align:center;">
-                    <td style="padding:10px; border:1px solid #ddd;">{{ plan.id }}</td>
-                    <td style="padding:10px; border:1px solid #ddd;">{{ plan.name }}</td>
-                    <td style="padding:10px; border:1px solid #ddd;">{{ plan.hlv.name if plan.hlv else 'Chưa gắn' }}</td>
-                    <td style="padding:10px; border:1px solid #ddd;">{{ plan.user.name if plan.user else 'Chưa gắn' }}</td>
-                    <td style="padding:10px; border:1px solid #ddd;">{{ plan.baitaps.count() }} bài tập</td>
-                    <td style="padding:10px; border:1px solid #ddd;">
-                        <a href="{{ url_for('hlv_detail', plan_id=plan.id) }}"
-                           style="text-decoration:none; color:#333; font-weight:bold;">Xem chi tiết</a>
-                    </td>
-                </tr>
-                {% endfor %}
+            {% for plan in plans %}
+            <tr style="text-align:center;">
+                <td style="padding:10px; border:1px solid #ddd;">{{ plan.id }}</td>
+                <td style="padding:10px; border:1px solid #ddd;">{{ plan.name }}</td>
+                <td style="padding:10px; border:1px solid #ddd;">{{ plan.hlv.name if plan.hlv else 'Chưa gắn' }}</td>
+                <td style="padding:10px; border:1px solid #ddd;">{{ plan.user.name if plan.user else 'Chưa gắn' }}</td>
+                <td style="padding:10px; border:1px solid #ddd;">{{ plan.baitaps|length }} bài tập</td>
+                <td style="padding:10px; border:1px solid #ddd;">
+                    <a href="{{ url_for('hlv_detail', plan_id=plan.id) }}"
+                       style="text-decoration:none; color:#333; font-weight:bold;">Xem chi tiết</a>
+                </td>
+            </tr>
+            {% endfor %}
             </tbody>
         </table>
 
-        <!-- Xóa kế hoạch -->
         <div style="margin-top:20px; padding:20px; background-color:#f9f9f9; border-radius:8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
             <form method="POST" style="display:flex; flex-direction: column; gap:10px;">
                 <select name="delete_plan_id" required
@@ -111,7 +116,8 @@
                     <option value="{{ plan.id }}">{{ plan.name }}</option>
                     {% endfor %}
                 </select>
-                <button type="submit" style="padding:10px; border:none; background-color:#f44336; color:white; border-radius:4px; cursor:pointer; width:150px;">
+                <button type="submit"
+                        style="padding:10px; border:none; background-color:#f44336; color:white; border-radius:4px; cursor:pointer; width:150px;">
                     Xóa Kế Hoạch
                 </button>
             </form>
@@ -121,9 +127,9 @@
 </div>
 
 <style>
-.hidden { display: none; }
-button:hover { opacity:0.9; }
-table tr:hover { background-color:#f9f9f9; }
+    .hidden { display: none; }
+    button:hover { opacity:0.9; }
+    table tr:hover { background-color:#f9f9f9; }
 </style>
 
 {% endblock %}

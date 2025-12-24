@@ -10,37 +10,51 @@
 
         <form method="POST" style="display:flex; flex-direction:column; gap:20px;">
 
-            <!-- Chọn học viên -->
             <div style="display:flex; flex-direction:column; gap:5px;">
                 <label style="font-weight:bold; color:#555;">Chọn học viên:</label>
                 <select name="user_id" style="padding:8px; border:1px solid #ccc; border-radius:4px; min-width:200px;">
                     <option value="none">-- Chưa gắn --</option>
                     {% for user in all_users %}
-                    <option value="{{ user.id }}" {% if plan.user_id==user.id %}selected{% endif %}>{{ user.name }}</option>
+                    <option value="{{ user.id }}" {% if plan.user_id==user.id %}selected{% endif %}>
+                        {{ user.name }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
 
-            <!-- Bài tập hiện có -->
             <div>
                 <h4 style="color:#555; margin-bottom:10px;">Bài tập trong kế hoạch:</h4>
                 <ul id="current-baitap-list" style="list-style:none; padding:0; display:flex; flex-direction:column; gap:8px;">
-                    {% for bt in plan.baitaps %}
-                    <li style="padding:8px 12px; border:1px solid #ddd; border-radius:6px; display:flex; justify-content:space-between; align-items:center; transition:0.2s; cursor:pointer;">
-                        <span>{{ bt.name }} ({{ bt.nhomco }})</span>
-                        <label style="cursor:pointer;">
-                            <input type="checkbox" name="remove_baitap_ids" value="{{ bt.id }}"> Xóa
-                        </label>
+                    {% for kb in plan.baitaps %}
+                    <li style="padding:8px 12px; border:1px solid #ddd; border-radius:6px;
+                               display:flex; justify-content:space-between; align-items:center; transition:0.2s; cursor:pointer;">
+                        <span>
+                            {{ kb.baitap.name }} ({{ kb.baitap.nhomco }})<br>
+                            <small style="color:#777;">{{ kb.baitap.mota }}</small>
+                        </span>
+
+                        <div style="display:flex; align-items:center; gap:10px;">
+
+                            <input type="number"
+                                   name="solan_{{ kb.baitap_id }}"
+                                   value="{{ kb.solan }}"
+                                   min="1"
+                                   style="width:70px; padding:4px;">
+
+                            <label style="cursor:pointer; white-space:nowrap;">
+                                <input type="checkbox" name="remove_baitap_ids" value="{{ kb.baitap_id }}"> Xóa
+                            </label>
+                        </div>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
 
-            <!-- Thêm bài tập -->
             <div>
                 <h4 style="color:#555; margin-bottom:10px;">Thêm bài tập:</h4>
                 <div style="position: relative; display: inline-block;">
-                    <button type="button" onclick="document.getElementById('baitap-list').classList.toggle('hidden')"
+                    <button type="button"
+                            onclick="document.getElementById('baitap-list').classList.toggle('hidden')"
                             style="padding:8px 12px; border:none; background-color:#333; color:white; border-radius:4px; cursor:pointer;">
                         Chọn bài tập
                     </button>
@@ -53,20 +67,25 @@
                         z-index: 10;
                         max-height: 200px;
                         overflow-y: auto;
-                        width: 250px;
+                        width: 300px;
                         padding: 10px;
                         border-radius:6px;
                         box-shadow:0 2px 8px rgba(0,0,0,0.1);
-                        transition:0.3s;
                     ">
                         {% for bt in all_baitap %}
-                        <label style="display:block; margin-bottom:6px; cursor:pointer; padding:4px; border-radius:4px; transition:0.2s;">
-                            <input type="checkbox" name="add_baitap_ids" value="{{ bt.id }}"> {{ bt.name }} ({{ bt.nhomco }})
+                        <label style="display:block; margin-bottom:6px; cursor:pointer;">
+                            <input type="checkbox" name="add_baitap_ids" value="{{ bt.id }}">
+                            {{ bt.name }} ({{ bt.nhomco }})
+                            <input type="number"
+                                   name="solan_new_{{ bt.id }}"
+                                   placeholder="Số lần"
+                                   min="1"
+                                   style="width:70px; margin-left:10px;">
                         </label>
                         {% endfor %}
                     </div>
                 </div>
-                <small style="color:#555;">Chọn nhiều bài tập</small>
+                <small style="color:#555;">Chọn nhiều bài tập và nhập số lần</small>
             </div>
 
             <button type="submit" style="padding:10px; border:none; background-color:#333; color:white; border-radius:6px; width:180px; cursor:pointer; transition:0.2s;">

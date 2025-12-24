@@ -41,15 +41,18 @@ class User(Base, UserMixin):
 
 class BaiTap(Base):
     __tablename__ = 'baitap'
-    solan = Column(Integer, nullable=False)
+    mota = Column(String(500), nullable=True)
+    avatar = Column(String(300))
     nhomco = Column(String(50), nullable=False)
 
-kehoachtap_baitap = Table(
-    'kehoachtap_baitap',
-    db.Model.metadata,
-    Column('kehoachtap_id', Integer, ForeignKey('kehoachtap.id')),
-    Column('baitap_id', Integer, ForeignKey('baitap.id'))
-)
+class KeHoach_BaiTap(db.Model):
+    __tablename__ = 'kehoachtap_baitap'
+    kehoachtap_id = Column(Integer, ForeignKey('kehoachtap.id'), primary_key=True)
+    baitap_id = Column(Integer, ForeignKey('baitap.id'), primary_key=True)
+    solan = Column(Integer, nullable=False)
+
+    baitap = relationship("BaiTap")
+
 
 class KeHoachTap(Base):
     __tablename__ = 'kehoachtap'
@@ -57,7 +60,7 @@ class KeHoachTap(Base):
     user_id = Column(Integer, ForeignKey('user.id'), nullable=True)
     user = relationship('User', foreign_keys=[user_id], lazy=True)
     hlv = relationship('User', foreign_keys=[hlv_id], lazy=True)
-    baitaps = relationship('BaiTap', secondary=kehoachtap_baitap, backref='kehoachtaps', lazy='dynamic')
+    baitaps = relationship('KeHoach_BaiTap', backref='kehoach', lazy=True)
 
 
 class HoaDon(Base):
@@ -93,11 +96,21 @@ if __name__ == "__main__":
 
         db.session.add_all([hd1, hd2])
 
-        bt1 = BaiTap(name="Chống đẩy", nhomco="Vai, Tay sau", solan =5)
-        bt2 = BaiTap(name="Ngồi xổm", nhomco="Mông",solan =10)
-        bt3 = BaiTap(name="Tấm ván", nhomco="lưng",solan =15)
-        bt4 = BaiTap(name="Cuộn tạ tay", nhomco="Tay trước",solan =20)
+        bt1 = BaiTap(name="Chống đẩy", nhomco="Vai, Tay sau", mota="Chống tay xuống sàn, giữ lưng thẳng", avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt2 = BaiTap(name="Ngồi xổm", nhomco="Mông", mota="Chân rộng ngang vai, hạ người xuống",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt3 = BaiTap(name="Tấm ván", nhomco="Lưng", mota="Chống khuỷu tay, giữ thân người thẳng",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt4 = BaiTap(name="Cuộn tạ tay", nhomco="Tay trước", mota="Cuộn tạ lên xuống chậm rãi",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt5 = BaiTap(name="Gập bụng", nhomco="Bụng", mota="Nằm ngửa, co gối và gập thân trên lên",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt6 = BaiTap(name="Nâng chân", nhomco="Bụng dưới", mota="Nằm ngửa, nâng hai chân lên rồi hạ xuống chậm",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt7 = BaiTap(name="Hít xà đơn", nhomco="Lưng, Tay trước", mota="Treo người trên xà và kéo thân lên",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt8 = BaiTap(name="Đẩy ngực với tạ", nhomco="Ngực", mota="Nằm ghế, đẩy tạ lên cao rồi hạ xuống",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt9 = BaiTap(name="Deadlift", nhomco="Lưng dưới, Đùi sau", mota="Gập người nâng tạ từ sàn lên đứng thẳng",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt10 = BaiTap(name="Chạy bộ", nhomco="Toàn thân", mota="Chạy tại chỗ hoặc trên máy để tăng sức bền",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt11 = BaiTap(name="Nhảy dây", nhomco="Toàn thân", mota="Nhảy liên tục với dây để đốt mỡ",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt12 = BaiTap(name="Plank nghiêng", nhomco="Bụng xiên", mota="Chống một tay, giữ thân người nghiêng thẳng",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt13 = BaiTap(name="Đá chân sau", nhomco="Mông, Đùi sau", mota="Đứng bám tường, đá chân ra sau",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
+        bt14 = BaiTap(name="Nâng vai", nhomco="Vai", mota="Cầm tạ, nâng vai lên rồi hạ xuống",avatar = "https://png.pngtree.com/png-vector/20190120/ourmid/pngtree-push-ups-fitness-work-out-gym-png-image_483557.png")
 
-        db.session.add_all([bt1, bt2, bt3, bt4])
+        db.session.add_all([bt1, bt2, bt3, bt4, bt5, bt6, bt7, bt8, bt9, bt10, bt11, bt12, bt13, bt14])
 
         db.session.commit()
