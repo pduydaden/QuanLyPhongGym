@@ -27,8 +27,6 @@ def login_my_user():
         email=request.form.get("email")
         pswd=request.form.get("pswd")
 
-
-
         user = dao.auth_user(email,pswd)
 
         if user:
@@ -55,9 +53,7 @@ def login_my_user():
 def hlv_dashboard():
     search = request.args.get('search', '')
 
-    # POST: thêm hoặc xóa kế hoạch
     if request.method == 'POST':
-        # Thêm kế hoạch
         plan_name = request.form.get('plan_name')
         user_id = request.form.get('user_id')
         baitap_ids = request.form.getlist('add_baitap_id')
@@ -69,7 +65,6 @@ def hlv_dashboard():
             db.session.add(plan)
             db.session.commit()
 
-            # Gắn bài tập
             for bt_id in baitap_ids:
                 bt = BaiTap.query.get(int(bt_id))
                 if bt:
@@ -78,7 +73,6 @@ def hlv_dashboard():
             flash("Tạo kế hoạch thành công!", "success")
             return redirect(url_for('hlv_dashboard'))
 
-        # Xóa kế hoạch
         delete_plan_id = request.form.get('delete_plan_id')
         if delete_plan_id:
             plan = KeHoachTap.query.get(int(delete_plan_id))
@@ -88,11 +82,10 @@ def hlv_dashboard():
                 flash("Xóa kế hoạch thành công!", "success")
             return redirect(url_for('hlv_dashboard'))
 
-    # GET: load dữ liệu
     query = KeHoachTap.query.filter_by(hlv_id=current_user.id)
     if search:
         query = query.filter(KeHoachTap.name.ilike(f"%{search}%"))
-    plans = query.order_by(KeHoachTap.id.asc()).all()  # ID từ 1 → hết
+    plans = query.order_by(KeHoachTap.id.asc()).all()
 
     all_baitap = BaiTap.query.all()
     all_users = User.query.filter_by(hlv_id=current_user.id).all()
@@ -109,7 +102,6 @@ def user_info():
     alert_type = "success"
 
     if request.method == "POST":
-        # Cập nhật các trường thông tin trừ password, role và gói tập
         user.name = request.form.get("name")
         user.gioitinh = request.form.get("gioitinh")
         user.sdt = request.form.get("sdt")
@@ -130,18 +122,15 @@ def hlv_detail(plan_id):
     all_users = dao.get_users_by_hlv(current_user.id)
 
     if request.method == 'POST':
-        # Cập nhật học viên
         user_id = request.form.get('user_id')
         plan.user_id = int(user_id) if user_id and user_id != 'none' else None
 
-        # Thêm bài tập
         add_baitap_ids = request.form.getlist('add_baitap_ids')
         for bt_id in add_baitap_ids:
             bt = BaiTap.query.get(int(bt_id))
             if bt and bt not in plan.baitaps:
                 plan.baitaps.append(bt)
 
-        # Xóa bài tập
         remove_baitap_ids = request.form.getlist('remove_baitap_ids')
         for bt_id in remove_baitap_ids:
             bt = BaiTap.query.get(int(bt_id))
@@ -153,6 +142,7 @@ def hlv_detail(plan_id):
         return redirect(url_for('hlv_detail', plan_id=plan.id))
 
     return render_template("hlv_detail.html", plan=plan, all_baitap=all_baitap, all_users=all_users)
+
 
 @app.route("/goitap", methods=['GET', 'POST'])
 def goitap_dashboard():
@@ -174,13 +164,7 @@ def goitap_dashboard():
                 alert_type = "info"
             else:
                 user.goitap_id = goitap.id
-                hoadon = HoaDon(
-                    name=f"Hóa đơn gói tập {goitap.name} của {user.name}",
-                    tongtien=goitap.giagoitap,
-                    trangthai=False,
-                    ngaythanhtoan=None,
-                    user_id=user.id
-                )
+                hoadon = HoaDon( name=f"Hóa đơn gói tập {goitap.name} của {user.name}", tongtien=goitap.giagoitap,trangthai=False, ngaythanhtoan=None,user_id=user.id )
                 db.session.add(hoadon)
                 db.session.commit()
                 msg = f"Bạn đã chọn gói tập '{goitap.name}'. Hóa đơn đã được tạo!"
@@ -195,9 +179,6 @@ def goitap_dashboard():
 def baitap_dashboard():
     return render_template("baitap.html")
 
-@app.route("/quydinh", methods=['GET', 'POST'])
-def quydinh_dashboard():
-    return render_template("quydinh.html")
 
 @app.route("/tn", methods=['GET', 'POST'])
 @login_required
@@ -207,14 +188,12 @@ def thungan_dashboard():
     if request.method == 'POST':
         hoadons = dao.get_all_hoadon()
 
-        # Xử lý xóa hóa đơn
         for hd in hoadons:
             if f"xoa_{hd.id}" in request.form:
                 db.session.delete(hd)
                 flash(f"Đã xóa hóa đơn '{hd.name}'", "success")
         db.session.commit()  # commit xóa trước
 
-        # Lấy lại danh sách hóa đơn còn tồn tại để cập nhật trạng thái
         hoadons = dao.get_all_hoadon()
         for hd in hoadons:
             hd.trangthai = f"trangthai_{hd.id}" in request.form
@@ -240,20 +219,13 @@ def tao_hoadon():
         name = f"Hóa đơn của {user.name}"
         tongtien = int(request.form['tongtien'])
 
-        hd = HoaDon(
-            name=name,
-            user_id=user_id,
-            tongtien=tongtien,
-            trangthai=False,
-            ngaythanhtoan=None
+        hd = HoaDon(name=name,user_id=user_id,tongtien=tongtien,trangthai=False,ngaythanhtoan=None
         )
         db.session.add(hd)
         db.session.commit()
 
         flash("Tạo hóa đơn thành công!", "success")
         return redirect(url_for('thungan_dashboard'))
-
-    # Lấy danh sách user role = USER từ dao
     users = dao.get_all_users()
     return render_template("tao_hoadon.html", users=users)
 
@@ -303,13 +275,7 @@ def signup_my_user():
             pswd_hash = hashlib.md5(pswd.encode('utf-8')).hexdigest()
 
             try:
-                user = User(
-                    name=name,
-                    gioitinh=gioitinh,
-                    sdt=sdt,
-                    email=email,
-                    pswd=pswd_hash,
-                    goitap_id=int(goitap_id)
+                user = User(name=name,gioitinh=gioitinh,sdt=sdt,email=email,pswd=pswd_hash,goitap_id=int(goitap_id)
                 )
                 db.session.add(user)
                 db.session.commit()
@@ -319,10 +285,7 @@ def signup_my_user():
                 if not goitap:
                     err_msg = "Gói tập không tồn tại!"
                 else:
-                    hoadon = HoaDon(
-                        name=f"Hóa đơn của {user.name}",
-                        tongtien=goitap.giagoitap,
-                        user_id=user.id
+                    hoadon = HoaDon(name=f"Hóa đơn của {user.name}",tongtien=goitap.giagoitap,user_id=user.id
                     )
                     db.session.add(hoadon)
                     db.session.commit()
@@ -350,11 +313,10 @@ def load_user(id):
 
 @app.route("/thongke")
 def thongke():
-    # Giả sử thống kê năm hiện tại
+
     year = datetime.now().year
     months = [f"{i}" for i in range(1,13)]
 
-    # Số hội viên theo tháng
     members_counts = []
     for m in range(1,13):
         count = User.query.filter(
@@ -363,7 +325,6 @@ def thongke():
         ).count()
         members_counts.append(count)
 
-    # Doanh thu theo tháng
     revenue = []
     for m in range(1,13):
         total = db.session.query(func.sum(HoaDon.tongtien)).filter(
@@ -373,15 +334,10 @@ def thongke():
         ).scalar() or 0
         revenue.append(total)
 
-    # Số hội viên đang hoạt động (ví dụ active=True)
     active_members = User.query.filter_by(active=True).count()
 
-    return render_template("admin/thongke.html",
-                           months=months,
-                           members_counts=members_counts,
-                           revenue=revenue,
-                           active_members=active_members,
-                           year=year)
+    return render_template("admin/thongke.html",months=months,members_counts=members_counts, revenue=revenue,active_members=active_members,year=year)
+
 
 
 if __name__ == "__main__":

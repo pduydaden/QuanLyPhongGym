@@ -8,7 +8,7 @@ def get_user_by_id(user_id):
     return User.query.get(int(user_id))
 
 def get_users_by_hlv_status(status=None, search=None):
-    query = User.query.filter(User.role == UserRole.USER)  # chỉ lấy học viên
+    query = User.query.filter(User.role == UserRole.USER)
 
     if status == 'no':
         query = query.filter(User.hlv_id == None)
@@ -47,17 +47,18 @@ def auth_user(email, pswd):
     return User.query.filter(User.email.__eq__(email), User.pswd.__eq__(pswd)).first()
 
 def get_plan(plan_id):
-    """Lấy 1 kế hoạch theo id"""
     return KeHoachTap.query.get(plan_id)
 
 
 def get_users_by_hlv(hlv_id):
-    """Lấy tất cả học viên do HLV quản lý"""
     return User.query.filter(User.hlv_id == hlv_id).all()
 
 def get_all_users():
-    """Lấy tất cả user có role USER"""
     return User.query.filter_by(role=UserRole.USER).all()
+
+def get_all_baitap():
+    return BaiTap.query.filter(BaiTap.active == True).all()
+
 
 if __name__ == '__main__':
     with app.app_context():
