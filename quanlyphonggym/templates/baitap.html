@@ -7,41 +7,17 @@
         Danh sách Bài Tập
     </h2>
 
-    <!-- Nút phân trang trên trái -->
     <div style="margin-bottom:15px; text-align:left;">
         {% for i in range(1, total_pages+1) %}
-            <a href="{{ url_for('baitap_list', page=i) }}"
-               style="
-                   padding:6px 10px;
-                   margin-right:5px;
-                   text-decoration:none;
-                   border:1px solid #ccc;
-                   border-radius:4px;
-                   background-color: {% if page==i %}#333{% else %}#fff{% endif %};
-                   color: {% if page==i %}#fff{% else %}#333{% endif %};
-               ">
+            <a href="{{ url_for('baitap_list', page=i) }}" style="padding:6px 10px;margin-right:5px;text-decoration:none;border:1px solid #ccc;border-radius:4px;background-color: {% if page==i %}#333{% else %}#fff{% endif %};color: {% if page==i %}#fff{% else %}#333{% endif %};">
                {{ i }}
             </a>
         {% endfor %}
     </div>
 
-    <!-- Grid bài tập -->
-    <div style="
-        display:grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap:20px;
-    ">
+    <div style="display:grid;grid-template-columns: repeat(3, 1fr);gap:20px;">
         {% for bt in baitaps %}
-        <div style="
-            position:relative;
-            border:1px solid #ddd;
-            border-radius:10px;
-            padding:10px;
-            background:#fff;
-            box-shadow:0 2px 6px rgba(0,0,0,0.08);
-            text-align:center;
-        ">
-            <!-- Ảnh cố định -->
+        <div style="position:relative;border:1px solid #ddd;border-radius:10px;padding:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.08);text-align:center; ">
             <div style="width:300px; height:200px; margin:0 auto; overflow:hidden; border-radius:8px;">
                 <img src="{{ bt.avatar }}" alt="{{ bt.name }}"
                      style="width:300px; height:200px; object-fit:cover;">
@@ -50,33 +26,16 @@
             <h4 style="margin:10px 0 5px 0; color:#333;">{{ bt.name }}</h4>
             <p style="margin:0; color:#777;">Nhóm cơ: <b>{{ bt.nhomco }}</b></p>
 
-            <!-- nút hiển thị mô tả -->
-            <button type="button"
-                    onclick="toggleDesc({{ bt.id }})"
-                    style="margin-top:5px; padding:4px 8px; border:none; background:#333; color:white; border-radius:4px; cursor:pointer;">
+            <button type="button" onclick="toggleDesc({{ bt.id }})" style="margin-top:5px; padding:4px 8px; border:none; background:#333; color:white; border-radius:4px; cursor:pointer;">
                 Xem mô tả
             </button>
 
-            <!-- mô tả nổi lên -->
             <div id="desc-{{ bt.id }}"
-                 style="
-                    display:none;
-                    position:absolute;
-                    top:0; left:0;
-                    width:100%;
-                    height:100%;
-                    background:rgba(255,255,255,0.95);
-                    padding:15px;
-                    border-radius:10px;
-                    overflow:auto;
-                    box-shadow:0 4px 12px rgba(0,0,0,0.2);
-                    z-index:10;
-                 ">
+                 style="display:none;position:absolute;top:0; left:0;width:100%;height:100%;background:rgba(255,255,255,0.95);padding:15px;border-radius:10px;overflow:auto;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:10;">
                 <h4 style="margin-top:0;">{{ bt.name }}</h4>
                 <p style="color:#555;">Nhóm cơ: <b>{{ bt.nhomco }}</b></p>
                 <p style="color:#555;">{{ bt.mota or 'Không có mô tả' }}</p>
-                <button onclick="toggleDesc({{ bt.id }})"
-                        style="margin-top:10px; padding:6px 12px; border:none; background:#333; color:white; border-radius:4px; cursor:pointer;">
+                <button onclick="toggleDesc({{ bt.id }})" style="margin-top:10px; padding:6px 12px; border:none; background:#333; color:white; border-radius:4px; cursor:pointer;">
                     Đóng
                 </button>
             </div>

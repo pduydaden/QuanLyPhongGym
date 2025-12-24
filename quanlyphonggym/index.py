@@ -172,14 +172,8 @@ def hlv_detail(plan_id):
         return redirect(url_for('hlv_detail', plan_id=plan.id))
 
     return render_template(
-        "hlv_detail.html",
-        plan=plan,
-        all_baitap=all_baitap,
-        all_users=all_users
+        "hlv_detail.html",plan=plan,all_baitap=all_baitap,all_users=all_users
     )
-
-
-
 
 
 @app.route("/goitap", methods=['GET', 'POST'])
