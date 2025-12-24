@@ -1,6 +1,7 @@
-{% extends 'layout/base.html' %}
 
-{% block conten %}
+
+<a href="/admin" style="display:inline-block; align-self:flex-start; margin-bottom:20px; text-decoration:none; color:#333; font-weight:600; padding:10px 16px; border:1px solid #ccc; border-radius:8px; background-color:#f8f8f8; transition:all 0.2s ease;" onmouseover="this.style.backgroundColor='#e0e0e0'; this.style.borderColor='#bbb'; this.style.color='#000';" onmouseout="this.style.backgroundColor='#f8f8f8'; this.style.borderColor='#ccc'; this.style.color='#333';">Quay lại trang Admin</a>
+
 <div style="min-height: 90vh; display:flex; justify-content:center; align-items:center; padding:20px;">
     <div style="width:100%; max-width:1200px; background-color:#f9f9f9; padding:40px; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1); text-align:center;">
         <h1 style="font-size:2.5rem; color:#333; margin-bottom:30px;">Thống Kê Hệ Thống</h1>
@@ -10,7 +11,6 @@
         </p>
 
         <div style="display:flex; flex-wrap:wrap; justify-content:space-around; gap:40px;">
-            <!-- Biểu đồ số hội viên -->
             <div style="flex:1 1 45%; min-width:300px; display:flex; flex-direction:column; align-items:center;">
                 <h3 style="font-size:1.8rem; margin-bottom:20px;">Số hội viên đăng ký theo tháng</h3>
                 <div style="width:100%; height:400px;">
@@ -18,7 +18,6 @@
                 </div>
             </div>
 
-            <!-- Biểu đồ doanh thu -->
             <div style="flex:1 1 45%; min-width:300px; display:flex; flex-direction:column; align-items:center;">
                 <h3 style="font-size:1.8rem; margin-bottom:20px;">Doanh thu theo tháng</h3>
                 <div style="width:100%; height:400px;">
@@ -81,4 +80,4 @@
         }
     });
 </script>
-{% endblock %}
+
