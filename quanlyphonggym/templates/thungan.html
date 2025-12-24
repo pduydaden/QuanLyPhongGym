@@ -4,6 +4,25 @@
 <div class="container my-5">
     <h2 class="text-center mb-4 fw-bold">Quản lý Hóa đơn</h2>
 
+    <!-- Form tìm kiếm / lọc -->
+    <form method="GET" class="mb-4">
+        <div class="row g-2 align-items-center justify-content-center">
+            <div class="col-auto">
+                <input type="text" name="user_id" class="form-control" placeholder="ID người dùng" value="{{ request.args.get('user_id','') }}">
+            </div>
+            <div class="col-auto">
+                <select name="trangthai" class="form-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="1" {% if request.args.get('trangthai')=='1' %}selected{% endif %}>Đã thanh toán</option>
+                    <option value="0" {% if request.args.get('trangthai')=='0' %}selected{% endif %}>Chưa thanh toán</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary shadow">Tìm kiếm</button>
+            </div>
+        </div>
+    </form>
+
     <form method="POST">
         <div class="table-responsive shadow p-3 mb-4 bg-white rounded">
             <table class="table table-hover align-middle text-center">

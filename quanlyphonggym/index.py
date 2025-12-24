@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user, logout_user, login_required
 from sqlalchemy import extract, func
+from werkzeug.security import generate_password_hash
 
 from quanlyphonggym import dao, app, login, admin, db
 from models import User, HoaDon, GoiTap, UserRole, BaiTap, KeHoachTap, KeHoach_BaiTap
@@ -111,7 +112,7 @@ def hlv_dashboard():
 @app.route("/user/info", methods=['GET', 'POST'])
 @login_required
 def user_info():
-    user = User.query.get(current_user.id)
+    user = db.session.get(User, current_user.id)  # đảm bảo lấy từ session DB
     msg = None
     alert_type = "success"
 
@@ -121,11 +122,25 @@ def user_info():
         user.sdt = request.form.get("sdt")
         user.email = request.form.get("email")
 
-        db.session.commit()
-        msg = "Cập nhật thông tin thành công!"
+        new_pswd = request.form.get("new_pswd")
+        confirm_pswd = request.form.get("confirm_pswd")
+        if new_pswd:
+            if new_pswd != confirm_pswd:
+                msg = "Mật khẩu mới và xác nhận không khớp!"
+                alert_type = "danger"
+                return render_template("user_info.html", user=user, msg=msg, alert_type=alert_type)
+            import hashlib
+            user.pswd = hashlib.md5(new_pswd.encode('utf-8')).hexdigest()
+
+        try:
+            db.session.commit()
+            msg = "Cập nhật thành công!"
+        except Exception as e:
+            db.session.rollback()
+            msg = f"Cập nhật thất bại: {str(e)}"
+            alert_type = "danger"
 
     return render_template("user_info.html", user=user, msg=msg, alert_type=alert_type)
-
 
 
 
@@ -226,7 +241,6 @@ def baitap_list(page=1):
 @login_required
 def thungan_dashboard():
     from datetime import datetime
-
     if request.method == 'POST':
         hoadons = dao.get_all_hoadon()
 
@@ -246,6 +260,15 @@ def thungan_dashboard():
         return redirect(url_for('thungan_dashboard'))
 
     hoadons = dao.get_all_hoadon()
+    user_id = request.args.get('user_id')
+    trangthai = request.args.get('trangthai')
+
+    if user_id:
+        hoadons = [hd for hd in hoadons if str(hd.user_id) == user_id]
+
+    if trangthai in ['0','1']:
+        hoadons = [hd for hd in hoadons if hd.trangthai == bool(int(trangthai))]
+
     return render_template("thungan.html", hoadons=hoadons)
 
 
@@ -257,7 +280,6 @@ def tao_hoadon():
         user_id = int(request.form['user_id'])
         user = User.query.get(user_id)
 
-        # Tạo tên hóa đơn tự động
         name = f"Hóa đơn của {user.name}"
         tongtien = int(request.form['tongtien'])
 
